@@ -173,14 +173,14 @@ impl<R: Seek + Read> Seek for VByteDecoder<R> {
 }
 
 impl<R: Read> Iterator for VByteDecoder<R> {
-    type Item = usize;
+    type Item = u64;
 
     /// Returns the next unsigned integer which is encoded in the underlying
     /// bytestream
     /// May iterate the underlying bytestream an arbitrary number of times
     /// Returns None when the underlying bytream returns None or delivers corrupt data
     fn next(&mut self) -> Option<Self::Item> {
-        let mut result: usize = 0;
+        let mut result: u64 = 0;
         // Read bytes into buffer
         let read = self.source.read(&mut self.buf[self.filled as usize..]).unwrap();
         let mut ptr = 0;
@@ -210,7 +210,7 @@ impl<R: Read> Iterator for VByteDecoder<R> {
             // Now decode
             for byte in a {
                 result *= 128;
-                result += (*byte & 127) as usize;
+                result += (*byte & 127) as u64;
             }
         }
         // Set self.buff and subtract the 128 from the 128 bit flag
@@ -292,7 +292,7 @@ mod tests {
         assert_eq!(buffer, vec![0x80, 0x01, 0x82, 0x85, 0x03, 0x7F, 0xFF, 0x80, 0x86, 0x82, 0x85, 0x84, 0x01, 0x83]);
 
         let decoder = VByteDecoder::new(buffer.as_slice());
-        assert_eq!(decoder.collect::<Vec<_>>(),
+        assert_eq!(decoder.collect::<Vec<u64>>(),
                     vec![0, 130, 5, 65535, 0, 6, 2, 5, 4, 131]);
 
     }
@@ -328,8 +328,8 @@ mod tests {
                    vec![0]);
 
         // MAX
-        assert_eq!(VByteDecoder::new(VByteEncoded::new(std::u64::MAX).data_buf()).collect::<Vec<_>>(),
-                   vec![usize::max_value()]);
+        assert_eq!(VByteDecoder::new(VByteEncoded::new(std::u64::MAX).data_buf()).collect::<Vec<u64>>(),
+                   vec![std::u64::MAX]);
 
         // too many bytes = corrupted data
         assert_eq!(VByteDecoder::new(vec![127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 255].as_slice())

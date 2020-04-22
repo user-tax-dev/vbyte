@@ -1,8 +1,8 @@
 # VByte
 
-Pure-rust implementation of VByte algorithm
+Pure-rust implementation of VByte algorithm for `u64`
 
-This is a fork of [perlin-core](https://github.com/CurrySoftware/perlin-core/tree/d60c665192e865c8f3e68f6ca28c6cfe361c0351)
+This is a fork of [perlin-core](https://github.com/CurrySoftware/perlin-core/tree/d60c665192e865c8f3e68f6ca28c6cfe361c0351).
 
 ## Usage
 
